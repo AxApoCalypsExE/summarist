@@ -1,5 +1,4 @@
-import Searchbar from "@/app/components/global/Searchbar";
-import Sidebar from "@/app/components/global/Sidebar";
+import LoginModal from "@/app/components/LoginModal";
 import React from "react";
 
 export default function mainLayout({
@@ -9,10 +8,8 @@ export default function mainLayout({
 }>) {
   return (
     <>
-      <Sidebar />
-      <div className="ml-[200px]">
-        {children}
-      </div>
+      <LoginModal />
+      <div className="ml-[200px]">{children}</div>
     </>
   );
 }

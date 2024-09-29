@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { AiOutlineHome, AiOutlineSearch } from "react-icons/ai";
 import { BsBookmark } from "react-icons/bs";
 import { FiLogOut, FiLogIn } from "react-icons/fi";
@@ -15,10 +15,18 @@ import { RootState } from "@/app/redux/store";
 import { openModal } from "@/app/redux/features/modalSlice";
 import { logout } from "@/app/redux/features/authSlice";
 
-const Sidebar = () => {
+const fontSizes = ["text-sm", "text-lg", "text-2xl", "text-4xl"];
+
+interface SidebarPlayerProps {
+  setFontSize: (size: string) => void;
+}
+
+const SidebarPlayer = ({ setFontSize }: SidebarPlayerProps) => {
   const pathname = usePathname();
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
+
+  const [selectedFontSize, setSelectedFontSize] = useState(fontSizes[0]);
 
   const isActive = (path: string) => pathname === path;
 
@@ -30,12 +38,17 @@ const Sidebar = () => {
     }
   };
 
+  const handleFontSizeSelect = (size: string) => {
+    setSelectedFontSize(size);
+    setFontSize(size);
+  };
+
   return (
-    <div className="h-screen w-[200px] bg-slate-50 fixed top-0 left-0">
+    <div className="h-screen w-[200px] bg-slate-50 pb-16 fixed top-0 left-0">
       <div className="p-4">
         <Image src="/logo.png" width={600} height={600} alt="Summarist" />
       </div>
-      <div className="h-[78%] flex flex-col items-center justify-between mt-8 gap-2">
+      <div className="h-[78%] overflow-auto flex flex-col items-center justify-between mt-8 gap-2">
         <div className="gap-2 flex flex-col items-start justify-center w-full">
           <Link href="/for-you" className="w-full">
             <div
@@ -100,6 +113,22 @@ const Sidebar = () => {
               <h1 className="2rem">Search</h1>
             </div>
           </div>
+
+          <div className="flex gap-2 items-center w-full pl-5">
+            {fontSizes.map((size, idx) => (
+              <div key={idx}>
+                <button
+                  onClick={() => handleFontSizeSelect(size)}
+                  className={`relative flex items-center ${size} `}
+                >
+                  Aa
+                  {selectedFontSize === size && (
+                    <div className="bg-green-400 absolute bottom-0 left-0 w-full h-1 rounded" />
+                  )}
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="gap-2 w-full flex flex-col items-start justify-center">
@@ -158,4 +187,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SidebarPlayer;

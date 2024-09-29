@@ -14,6 +14,7 @@
 body {
   max-width: 100%;
   overflow-x: hidden;
+  color: #032b41;
 }
 
 a {
@@ -73,6 +74,14 @@ button:disabled {
 
 .btn:active {
   transform: translateY(1px);
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
 }
 
 .home__cta--btn {
@@ -367,6 +376,9 @@ button:disabled {
 
 #footer {
   background-color: rgb(241 246 244);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .footer__top--wrapper {

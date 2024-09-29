@@ -32,20 +32,26 @@ const LoginModal = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const  handleGuestLogin = async () => {
+  const handleGuestLogin = async () => {
     dispatch(loginStart());
     try {
       const result = await signInAnonymously(auth);
       const user = result.user;
-      console.log("Guest User Data: ", user);
-      dispatch(loginSuccess(user));
+      dispatch(
+        loginSuccess({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          isAnonymous: user.isAnonymous,
+        })
+      );
       dispatch(closeModal());
       router.push("/for-you");
     } catch (error: unknown) {
       if (error instanceof Error) {
         dispatch(loginFailure(error.message));
       } else {
-        dispatch(loginFailure("An error has occured."))
+        dispatch(loginFailure("An error has occured."));
       }
     }
   };
@@ -61,9 +67,14 @@ const LoginModal = () => {
       );
       const user = userCredential.user;
 
-      console.log("User Data:", user);
-
-      dispatch(loginSuccess(user));
+      dispatch(
+        loginSuccess({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          isAnonymous: user.isAnonymous,
+        })
+      );
       dispatch(closeModal());
       router.push("/for-you");
     } catch (error: unknown) {
@@ -83,9 +94,14 @@ const LoginModal = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      console.log("Google User Data:", user);
-
-      dispatch(loginSuccess(user));
+      dispatch(
+        loginSuccess({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          isAnonymous: user.isAnonymous,
+        })
+      );
       dispatch(closeModal());
       router.push("/for-you");
     } catch (error: unknown) {
@@ -108,7 +124,15 @@ const LoginModal = () => {
         password
       );
       const user = userCredential.user;
-      dispatch(signupSuccess(user));
+
+      dispatch(
+        signupSuccess({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          isAnonymous: user.isAnonymous,
+        })
+      );
       dispatch(closeModal());
       router.push("/for-you");
     } catch (error: unknown) {
@@ -140,7 +164,10 @@ const LoginModal = () => {
             <div className="h-full flex col-span-1 ml-2 items-center text-2xl">
               <FaUser />
             </div>
-            <div onClick={handleGuestLogin} className="col-span-3 flex justify-center items-center">
+            <div
+              onClick={handleGuestLogin}
+              className="col-span-3 flex justify-center items-center"
+            >
               Login as a Guest
             </div>
           </button>
