@@ -139,7 +139,7 @@ const LoginModal = () => {
       router.push("/for-you");
     } catch (error: unknown) {
       if (error instanceof Error) {
-        dispatch(loginFailure(error.message));
+        dispatch(loginFailure(`Loginfaidled: ${error.message}`));
       } else {
         dispatch(loginFailure("An unexpected error occurred."));
       }

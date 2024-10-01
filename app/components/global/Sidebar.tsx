@@ -9,21 +9,25 @@ import { RiBallPenLine } from "react-icons/ri";
 import { RxQuestionMarkCircled } from "react-icons/rx";
 import { SlSettings } from "react-icons/sl";
 import { usePathname } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Link from "next/link";
-import { RootState } from "@/app/redux/store";
 import { openModal } from "@/app/redux/features/modalSlice";
 import { logout } from "@/app/redux/features/authSlice";
+import { getAuth } from "firebase/auth";
 
 const Sidebar = () => {
   const pathname = usePathname();
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.auth.user);
+  const auth = getAuth();
+
+  const user = auth.currentUser;
+  console.log(user)
 
   const isActive = (path: string) => pathname === path;
 
   const handleAuthAction = () => {
     if (user) {
+      auth.signOut()
       dispatch(logout());
     } else {
       dispatch(openModal("login"));

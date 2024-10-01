@@ -9,8 +9,11 @@ import {
   getStripePayments,
 } from "@invertase/firestore-stripe-payments";
 import { getApp } from "firebase/app";
+import { getCheckoutUrl } from "./stripePayments";
+import { useRouter } from "next/navigation";
 
 const PlanOptions = () => {
+  const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState("yearly");
   const [priceId, setPriceId] = useState<string | null>(null);
 
@@ -19,7 +22,7 @@ const PlanOptions = () => {
     productsCollection: "products",
     customersCollection: "customers",
   });
-  
+
   const yearlyPrice = process.env.NEXT_PUBLIC_PRICE_YEARLY!;
   const monthlyPrice = process.env.NEXT_PUBLIC_PRICE_MONTHLY!;
 
@@ -32,24 +35,33 @@ const PlanOptions = () => {
   }, [selectedPlan, yearlyPrice, monthlyPrice]);
 
   const handleCheckoutSession = async () => {
-    if (!priceId) {
-      console.error("Price ID is missing");
-      return;
-    }
-    try {
-      if (!payments) {
-        console.error("Payments object is missing or not initialized properly");
-        return;
-      }
-
-      const session = await createCheckoutSession(payments, {
-        price: priceId,
-      });
-      window.location.assign(session.url);
-    } catch (error) {
-      console.error("Error creating checkout session:", error);
+    if (priceId) {
+      const checkoutUrl = await getCheckoutUrl(app, priceId);
+      router.push(checkoutUrl);
+    } else {
+      console.log("Didint work")
     }
   };
+
+  // const handleCheckoutSession = async () => {
+  //   if (!priceId) {
+  //     console.error("Price ID is missing");
+  //     return;
+  //   }
+  //   try {
+  //     if (!payments) {
+  //       console.error("Payments object is missing or not initialized properly");
+  //       return;
+  //     }
+
+  //     const session = await createCheckoutSession(payments, {
+  //       price: priceId,
+  //     });
+  //     window.location.assign(session.url);
+  //   } catch (error) {
+  //     console.error("Error creating checkout session:", error);
+  //   }
+  // };
 
   return (
     <div>
