@@ -27,7 +27,7 @@ export default function Landing() {
                 </div>
                 <button
                   className="btn home__cta--btn"
-                  onClick={() => dispatch(openModal("login"))}
+                  onClick={() => dispatch(openModal("signup"))}
                 >
                   Login
                 </button>

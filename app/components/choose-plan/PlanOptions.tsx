@@ -1,12 +1,55 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiFillFileText } from "react-icons/ai";
 import { FaHandshake } from "react-icons/fa6";
 import { RiPlantFill } from "react-icons/ri";
+import {
+  createCheckoutSession,
+  getStripePayments,
+} from "@invertase/firestore-stripe-payments";
+import { getApp } from "firebase/app";
 
 const PlanOptions = () => {
   const [selectedPlan, setSelectedPlan] = useState("yearly");
+  const [priceId, setPriceId] = useState<string | null>(null);
+
+  const app = getApp();
+  const payments = getStripePayments(app, {
+    productsCollection: "products",
+    customersCollection: "customers",
+  });
+  
+  const yearlyPrice = process.env.NEXT_PUBLIC_PRICE_YEARLY!;
+  const monthlyPrice = process.env.NEXT_PUBLIC_PRICE_MONTHLY!;
+
+  useEffect(() => {
+    if (selectedPlan === "yearly") {
+      setPriceId(yearlyPrice);
+    } else {
+      setPriceId(monthlyPrice);
+    }
+  }, [selectedPlan, yearlyPrice, monthlyPrice]);
+
+  const handleCheckoutSession = async () => {
+    if (!priceId) {
+      console.error("Price ID is missing");
+      return;
+    }
+    try {
+      if (!payments) {
+        console.error("Payments object is missing or not initialized properly");
+        return;
+      }
+
+      const session = await createCheckoutSession(payments, {
+        price: priceId,
+      });
+      window.location.assign(session.url);
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+    }
+  };
 
   return (
     <div>
@@ -79,19 +122,21 @@ const PlanOptions = () => {
 
       {selectedPlan === "yearly" ? (
         <div className="sticky z-10 py-8 flex flex-col items-center gap-4 bottom-0 bg-white">
-          <button className="btn max-w-[300px]">
+          <button className="btn max-w-[300px]" onClick={handleCheckoutSession}>
             Start your free 7-day trial
           </button>
           <p className="text-[12px] text-primary/50 text-center">
-            Cancel your trial at any time before it ends, and you won’t be
+            Cancel your trial at any time before it ends, and you won&apos;t be
             charged.
           </p>
         </div>
       ) : (
         <div className="sticky z-10 py-8 flex flex-col items-center gap-4 bottom-0 bg-white">
-          <button className="btn max-w-[300px]">Start your first month</button>
+          <button className="btn max-w-[300px]" onClick={handleCheckoutSession}>
+            Start your first month
+          </button>
           <p className="text-[12px] text-primary/50 text-center">
-            30-day money back guarantee, no questions asked.
+            30-day money-back guarantee, no questions asked.
           </p>
         </div>
       )}

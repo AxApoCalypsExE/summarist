@@ -102,8 +102,10 @@ const LoginModal = () => {
           isAnonymous: user.isAnonymous,
         })
       );
-      dispatch(closeModal());
-      router.push("/for-you");
+      if (user) {
+        dispatch(closeModal());
+        router.push("/for-you");
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -266,7 +268,7 @@ const LoginModal = () => {
             <div className="h-full flex col-span-1 ml-2 items-center text-2xl">
               <FaGoogle />
             </div>
-            <div className="col-span-3 flex justify-center items-center">
+            <div className="col-span-3 flex justify-center items-center" onClick={() => handleGoogleLogin()}>
               Signup with Google
             </div>
           </button>

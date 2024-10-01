@@ -90,7 +90,7 @@ const Reviews = () => {
           <div className="reviews__btn--wrapper">
             <button
               className="btn home__cta--btn"
-              onClick={() => dispatch(openModal("login"))}
+              onClick={() => dispatch(openModal("signup"))}
             >
               Login
             </button>
