@@ -11,9 +11,10 @@ import { SlSettings } from "react-icons/sl";
 import { usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
-import { RootState } from "@/app/redux/store";
 import { openModal } from "@/app/redux/features/modalSlice";
 import { logout } from "@/app/redux/features/authSlice";
+import { auth } from "@/app/firebase";
+import { resetPremiumState } from "@/app/redux/features/premiumSlice";
 
 const fontSizes = ["text-sm", "text-lg", "text-2xl", "text-4xl"];
 
@@ -24,7 +25,7 @@ interface SidebarPlayerProps {
 const SidebarPlayer = ({ setFontSize }: SidebarPlayerProps) => {
   const pathname = usePathname();
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = auth.currentUser;
 
   const [selectedFontSize, setSelectedFontSize] = useState(fontSizes[0]);
 
@@ -32,6 +33,8 @@ const SidebarPlayer = ({ setFontSize }: SidebarPlayerProps) => {
 
   const handleAuthAction = () => {
     if (user) {
+      resetPremiumState();
+      auth.signOut()
       dispatch(logout());
     } else {
       dispatch(openModal("login"));

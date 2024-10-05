@@ -3,13 +3,18 @@
 import Searchbar from "@/app/components/global/Searchbar";
 import SidebarPlayer from "@/app/components/global/SidebarPlayer";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { IoIosPlayCircle } from "react-icons/io";
 import { MdPauseCircle } from "react-icons/md";
 import { RiForward10Line, RiReplay10Line } from "react-icons/ri";
 
 import "./progress-bar.css";
+import { auth } from "@/app/firebase";
+import { getPremiumStatus } from "@/app/components/choose-plan/getPremiumStatus";
+import { getApp } from "firebase/app";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/redux/store";
 
 interface PlayerProps {
   id: string;
@@ -32,6 +37,7 @@ interface PlayerProps {
 
 const Player = () => {
   const { id } = useParams();
+  const app = getApp();
 
   const [playerData, setPlayerData] = useState<PlayerProps | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,6 +48,9 @@ const Player = () => {
   const [duration, setDuration] = useState(0);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const user = auth.currentUser
+  const router = useRouter();
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60)
@@ -69,6 +78,18 @@ const Player = () => {
       audioRef.current.currentTime += seconds;
     }
   };
+
+  const isPremium = useSelector((state: RootState) => state.premium.isPremium);
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/for-you")
+    } else if (!isPremium && playerData?.subscriptionRequired) {
+      router.push("/choose-plan")
+    } else {
+      return
+    }
+  }, [isPremium, router, user, playerData?.subscriptionRequired])
 
   useEffect(() => {
     const fetchPlayerData = async () => {

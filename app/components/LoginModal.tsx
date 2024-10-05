@@ -46,7 +46,8 @@ const LoginModal = () => {
         })
       );
       dispatch(closeModal());
-      router.push("/for-you");
+      await router.push("/for-you");
+      router.refresh();
     } catch (error: unknown) {
       if (error instanceof Error) {
         dispatch(loginFailure(error.message));
@@ -76,7 +77,8 @@ const LoginModal = () => {
         })
       );
       dispatch(closeModal());
-      router.push("/for-you");
+      await router.push("/for-you");
+      router.refresh();
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -104,7 +106,8 @@ const LoginModal = () => {
       );
       if (user) {
         dispatch(closeModal());
-        router.push("/for-you");
+        await router.push("/for-you");
+        router.refresh();
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -136,7 +139,8 @@ const LoginModal = () => {
         })
       );
       dispatch(closeModal());
-      router.push("/for-you");
+      await router.push("/for-you");
+      router.refresh();
     } catch (error: unknown) {
       if (error instanceof Error) {
         dispatch(loginFailure(`Loginfaidled: ${error.message}`));
@@ -268,7 +272,10 @@ const LoginModal = () => {
             <div className="h-full flex col-span-1 ml-2 items-center text-2xl">
               <FaGoogle />
             </div>
-            <div className="col-span-3 flex justify-center items-center" onClick={() => handleGoogleLogin()}>
+            <div
+              className="col-span-3 flex justify-center items-center"
+              onClick={() => handleGoogleLogin()}
+            >
               Signup with Google
             </div>
           </button>

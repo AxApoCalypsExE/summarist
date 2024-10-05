@@ -2,8 +2,12 @@
 
 import Searchbar from "@/app/components/global/Searchbar";
 import Sidebar from "@/app/components/global/Sidebar";
+import { auth } from "@/app/firebase";
+import { fetchAuthUser } from "@/app/redux/features/authSlice";
 import { openModal } from "@/app/redux/features/modalSlice";
-import { RootState } from "@/app/redux/store";
+import { fetchPremiumStatus } from "@/app/redux/features/premiumSlice";
+import { AppDispatch, RootState } from "@/app/redux/store";
+import { getApp } from "firebase/app";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -35,13 +39,63 @@ interface BookProps {
 
 const Book = () => {
   const { id } = useParams();
+  const router = useRouter();
+  const user = auth.currentUser;
+  const app = getApp()
+
   const [book, setBook] = useState<BookProps | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const user = useSelector((state: RootState) => state.auth.user);
-  const dispatch = useDispatch();
-  const router = useRouter();
+  const [audioDuration, setAudioDuration] = useState<string>("");
+
+  const dispatch = useDispatch<AppDispatch>();
+  const isPremium = useSelector((state: RootState) => state.premium.isPremium);
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60)
+      .toString()
+      .padStart(2, "0");
+    const seconds = Math.floor(time % 60)
+      .toString()
+      .padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  };
+
+  useEffect(() => {
+    dispatch(fetchAuthUser(app));
+    dispatch(fetchPremiumStatus());
+  }, [dispatch, app]);
+
+  useEffect(() => {
+    if (book?.audioLink) {
+      const audioElement = new Audio(book.audioLink);
+
+      const handleLoadedMetadata = () => {
+        const duration = audioElement.duration;
+        setAudioDuration(formatTime(duration));
+      };
+
+      audioElement.addEventListener("loadedmetadata", handleLoadedMetadata);
+
+      return () => {
+        audioElement.removeEventListener(
+          "loadedmetadata",
+          handleLoadedMetadata
+        );
+      };
+    }
+  }, [book?.audioLink]);
+
+  const handleAction = () => {
+    if (!user) {
+      dispatch(openModal("login"));
+    } else if (!isPremium && book?.subscriptionRequired) {
+      router.push(`/choose-plan`);
+    } else {
+      router.push(`/player/${id}`);
+    }
+  };
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -62,18 +116,6 @@ const Book = () => {
     fetchBook();
   }, [id]);
 
-  const handleAction = (type: "read" | "listen") => {
-    if (!user) {
-      dispatch(openModal("login"));
-    } else {
-      if (type === "read") {
-        router.push(`/player/${id}`);
-      } else {
-        router.push(`/player/${id}`);
-      }
-    }
-  };
-
   return (
     <>
       <Sidebar />
@@ -89,7 +131,9 @@ const Book = () => {
               </>
             ) : (
               <>
-                <h1 className="font-bold text-3xl">{book?.title}</h1>
+                <h1 className="font-bold text-3xl">
+                  {book?.title} {book?.subscriptionRequired && "(Premium)"}
+                </h1>
                 <h3 className="text-base font-bold">{book?.author}</h3>
                 <h2 className="text-xl font-light">{book?.subTitle}</h2>
               </>
@@ -112,7 +156,11 @@ const Book = () => {
                   </div>
                   <div className="flex gap-1 items-center w-[50%]">
                     <FaRegClock className="text-2xl " />
-                    00:00
+                    {audioDuration ? (
+                      audioDuration
+                    ) : (
+                      <div className="w-20 h-4 animate-pulse bg-gray-400" />
+                    )}
                   </div>
                   <div className="flex gap-1 items-center w-[50%]">
                     <FiMic className="text-2xl " />
@@ -136,14 +184,14 @@ const Book = () => {
               <>
                 <button
                   className="flex justify-center items-center rounded bg-[#032b41] text-white w-36 h-12 gap-3"
-                  onClick={() => handleAction("read")}
+                  onClick={() => handleAction()}
                 >
                   <PiBookOpenTextBold className="text-xl" />
                   Read
                 </button>
                 <button
                   className="flex justify-center items-center rounded bg-[#032b41] text-white w-36 h-12 gap-3"
-                  onClick={() => handleAction("listen")}
+                  onClick={() => handleAction()}
                 >
                   <FiMic className="text-xl" />
                   Listen

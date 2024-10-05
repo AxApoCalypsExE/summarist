@@ -6,6 +6,11 @@ import Selected from "@/app/components/for-you/Selected";
 import Recommended from "@/app/components/for-you/Recommended";
 import Suggested from "@/app/components/for-you/Suggested";
 import Sidebar from "@/app/components/global/Sidebar";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/app/redux/store";
+import { fetchPremiumStatus } from "@/app/redux/features/premiumSlice";
+import { fetchAuthUser } from "@/app/redux/features/authSlice";
+import { getApp } from "firebase/app";
 
 interface Book {
   id: string;
@@ -27,11 +32,19 @@ interface Book {
 }
 
 const ForYou = () => {
+  const app = getApp();
   const [selectedBooks, setSelectedBooks] = useState<Book[]>([]);
   const [recommendedBooks, setRecommendedBooks] = useState<Book[]>([]);
   const [suggestedBooks, setSuggestedBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(fetchAuthUser(app));
+    dispatch(fetchPremiumStatus());
+  }, [dispatch, app]);
 
   useEffect(() => {
     const fetchBooks = async () => {

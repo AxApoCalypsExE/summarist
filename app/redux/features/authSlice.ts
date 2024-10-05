@@ -1,4 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { FirebaseApp } from "firebase/app";
 
 interface AuthState {
   user: {
@@ -16,6 +18,38 @@ const initialState: AuthState = {
   error: null,
   loading: false,
 };
+
+export const fetchAuthUser = createAsyncThunk(
+  "auth/fetchAuthUser",
+  async (app: FirebaseApp, { rejectWithValue }) => {
+    try {
+      const auth = getAuth(app);
+      return new Promise<AuthState["user"] | null>((resolve, reject) => {
+        onAuthStateChanged(
+          auth,
+          (user) => {
+            if (user) {
+              resolve({
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+                isAnonymous: user.isAnonymous,
+              });
+            } else {
+              resolve(null);
+            }
+          },
+          (error) => {
+            rejectWithValue(error.message);
+            reject(error);
+          }
+        );
+      });
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
@@ -42,6 +76,21 @@ const authSlice = createSlice({
       state.error = null;
       state.loading = false;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchAuthUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAuthUser.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchAuthUser.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.loading = false;
+      });
   },
 });
 

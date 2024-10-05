@@ -8,27 +8,31 @@ import { FiLogOut, FiLogIn } from "react-icons/fi";
 import { RiBallPenLine } from "react-icons/ri";
 import { RxQuestionMarkCircled } from "react-icons/rx";
 import { SlSettings } from "react-icons/sl";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import Link from "next/link";
 import { openModal } from "@/app/redux/features/modalSlice";
 import { logout } from "@/app/redux/features/authSlice";
 import { getAuth } from "firebase/auth";
+import { resetPremiumState } from "@/app/redux/features/premiumSlice";
 
 const Sidebar = () => {
   const pathname = usePathname();
   const dispatch = useDispatch();
   const auth = getAuth();
+  const router = useRouter()
 
   const user = auth.currentUser;
-  console.log(user)
 
   const isActive = (path: string) => pathname === path;
 
   const handleAuthAction = () => {
     if (user) {
+      resetPremiumState();
       auth.signOut()
       dispatch(logout());
+      router.push("/for-you")
+      router.refresh()
     } else {
       dispatch(openModal("login"));
     }

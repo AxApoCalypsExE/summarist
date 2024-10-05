@@ -4,10 +4,6 @@ import React, { useEffect, useState } from "react";
 import { AiFillFileText } from "react-icons/ai";
 import { FaHandshake } from "react-icons/fa6";
 import { RiPlantFill } from "react-icons/ri";
-import {
-  createCheckoutSession,
-  getStripePayments,
-} from "@invertase/firestore-stripe-payments";
 import { getApp } from "firebase/app";
 import { getCheckoutUrl } from "./stripePayments";
 import { useRouter } from "next/navigation";
@@ -18,10 +14,6 @@ const PlanOptions = () => {
   const [priceId, setPriceId] = useState<string | null>(null);
 
   const app = getApp();
-  const payments = getStripePayments(app, {
-    productsCollection: "products",
-    customersCollection: "customers",
-  });
 
   const yearlyPrice = process.env.NEXT_PUBLIC_PRICE_YEARLY!;
   const monthlyPrice = process.env.NEXT_PUBLIC_PRICE_MONTHLY!;
@@ -39,29 +31,9 @@ const PlanOptions = () => {
       const checkoutUrl = await getCheckoutUrl(app, priceId);
       router.push(checkoutUrl);
     } else {
-      console.log("Didint work")
+      console.log("Didnt work")
     }
   };
-
-  // const handleCheckoutSession = async () => {
-  //   if (!priceId) {
-  //     console.error("Price ID is missing");
-  //     return;
-  //   }
-  //   try {
-  //     if (!payments) {
-  //       console.error("Payments object is missing or not initialized properly");
-  //       return;
-  //     }
-
-  //     const session = await createCheckoutSession(payments, {
-  //       price: priceId,
-  //     });
-  //     window.location.assign(session.url);
-  //   } catch (error) {
-  //     console.error("Error creating checkout session:", error);
-  //   }
-  // };
 
   return (
     <div>
