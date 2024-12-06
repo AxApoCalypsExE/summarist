@@ -130,24 +130,23 @@ const Player = () => {
   }, []);
 
   useEffect(() => {
-    const audioElement = audioRef.current;
 
     const setAudioDuration = () => {
-      if (audioElement) {
-        setDuration(audioElement.duration);
+      if (audioRef.current) {
+        setDuration(audioRef.current.duration);
       }
     };
 
-    if (audioElement) {
-      audioElement.addEventListener("loadedmetadata", setAudioDuration);
+    if (audioRef.current) {
+      audioRef.current.addEventListener("loadedmetadata", setAudioDuration);
     }
 
     return () => {
-      if (audioElement) {
-        audioElement.removeEventListener("loadedmetadata", setAudioDuration);
+      if (audioRef.current) {
+        audioRef.current.removeEventListener("loadedmetadata", setAudioDuration);
       }
     };
-  }, []);
+  }, [audioRef.current]);
 
   useEffect(() => {
     const progressBar = document.querySelector(
@@ -169,7 +168,7 @@ const Player = () => {
       {loading ? (
         <div>
           <FaSpinner className="animate-spin" />
-          {error ? (error): null}
+          {error ? error : null}
         </div>
       ) : (
         <>
