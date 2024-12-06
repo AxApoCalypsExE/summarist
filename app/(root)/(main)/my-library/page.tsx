@@ -1,3 +1,4 @@
+import Searchbar from "@/app/components/global/Searchbar";
 import Sidebar from "@/app/components/global/Sidebar";
 import React from "react";
 
@@ -5,6 +6,7 @@ const MyLibrary = () => {
   return (
     <>
       <Sidebar />
+      <Searchbar />
       <div className="w-full h-[80vh] flex items-center justify-center">
         <h1 className="text-4xl font-bold">Library Coming Soon...</h1>
       </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import Searchbar from "@/app/components/global/Searchbar";
 import Sidebar from "@/app/components/global/Sidebar";
 import { auth } from "@/app/firebase";
 import { fetchAuthUser } from "@/app/redux/features/authSlice";
@@ -118,9 +119,11 @@ const Book = () => {
   return (
     <>
       <Sidebar />
+      <Searchbar />
       <div className="flex max-w-[1070px] mx-auto py-10 justify-between px-6 gap-4">
         <div className="w-[60%]">
           <div className="gap-4 flex flex-col mb-4">
+            {error ? error : null}
             {loading ? (
               <>
                 <div className="bg-gray-300 animate-pulse rounded-md w-full h-16"></div>
@@ -200,7 +203,7 @@ const Book = () => {
           {loading ? (
             <div className="animate-pulse h-8 w-[250px] bg-gray-300"> </div>
           ) : (
-            <div className="text-blue-600 flex items-center gap-2 text-lg font-semibold">
+            <div className="text-blue-600 cursor-not-allowed flex items-center gap-2 text-lg font-semibold">
               <BsBookmark />
               Add title to My Library
             </div>

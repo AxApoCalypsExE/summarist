@@ -1,5 +1,6 @@
 "use client";
 
+import Searchbar from "@/app/components/global/Searchbar";
 import Sidebar from "@/app/components/global/Sidebar";
 import { openModal } from "@/app/redux/features/modalSlice";
 import { RootState } from "@/app/redux/store";
@@ -37,6 +38,7 @@ const Settings = () => {
   return (
     <>
       <Sidebar />
+      <Searchbar />
       <div className="py-10">
         <div className="mx-auto px-6 max-w-[1070px]">
           <div className=" text-left border-b border-b-gray-200 text-[32px] font-bold pb-4 mb-8">

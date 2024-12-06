@@ -1,5 +1,6 @@
 "use client";
 
+import Searchbar from "@/app/components/global/Searchbar";
 import SidebarPlayer from "@/app/components/global/SidebarPlayer";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -10,9 +11,9 @@ import { RiForward10Line, RiReplay10Line } from "react-icons/ri";
 
 import "./progress-bar.css";
 import { auth } from "@/app/firebase";
-import { getApp } from "firebase/app";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/redux/store";
+import { FaSpinner } from "react-icons/fa";
 
 interface PlayerProps {
   id: string;
@@ -35,7 +36,7 @@ interface PlayerProps {
 
 const Player = () => {
   const { id } = useParams();
-  const app = getApp();
+  // const app = getApp();
 
   const [playerData, setPlayerData] = useState<PlayerProps | null>(null);
   const [loading, setLoading] = useState(true);
@@ -47,7 +48,7 @@ const Player = () => {
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const user = auth.currentUser
+  const user = auth.currentUser;
   const router = useRouter();
 
   const formatTime = (time: number) => {
@@ -81,13 +82,13 @@ const Player = () => {
 
   useEffect(() => {
     if (!user) {
-      router.push("/for-you")
+      router.push("/for-you");
     } else if (!isPremium && playerData?.subscriptionRequired) {
-      router.push("/choose-plan")
+      router.push("/choose-plan");
     } else {
-      return
+      return;
     }
-  }, [isPremium, router, user, playerData?.subscriptionRequired])
+  }, [isPremium, router, user, playerData?.subscriptionRequired]);
 
   useEffect(() => {
     const fetchPlayerData = async () => {
@@ -164,63 +165,73 @@ const Player = () => {
   return (
     <>
       <SidebarPlayer setFontSize={setFontSize} />
-      <div className="mx-auto p-6 max-w-[800px] whitespace-pre-line">
-        <div className="text-2xl font-bold mb-8 pb-4 border-b border-gray-200">
-          {playerData?.title}
+      <Searchbar />
+      {loading ? (
+        <div>
+          <FaSpinner className="animate-spin" />
+          {error ? (error): null}
         </div>
-        <div className={`${fontSize} mb-20`}>{playerData?.summary}</div>
-      </div>
-      <div className="w-full px-10 text-white fixed h-20 bg-slate-900 bottom-0 left-0 flex items-center justify-between">
-        <audio
-          preload="metadata"
-          ref={audioRef}
-          src={playerData?.audioLink}
-        ></audio>
-        <div className="w-1/3 gap-3 flex">
-          {playerData?.imageLink && (
-            <Image
-              src={playerData.imageLink}
-              width={600}
-              height={600}
-              alt="Book cover"
-              className="w-12 max-w-12 h-12"
-            />
-          )}
-          <div className="flex flex-col text-sm justify-center">
-            <p>{playerData?.title}</p>
-            <p className="text-slate-300">{playerData?.author}</p>
+      ) : (
+        <>
+          <div className="mx-auto p-6 max-w-[800px] whitespace-pre-line">
+            <div className="text-2xl font-bold mb-8 pb-4 border-b border-gray-200">
+              {playerData?.title}
+            </div>
+            <div className={`${fontSize} mb-20`}>{playerData?.summary}</div>
           </div>
-        </div>
-        <div className="w-1/3 flex gap-4 items-center justify-center">
-          <button onClick={() => handleSkip(-10)} className="text-3xl">
-            <RiReplay10Line />
-          </button>
-          <button onClick={handlePlayPause} className="text-5xl">
-            {isPlaying ? <MdPauseCircle /> : <IoIosPlayCircle />}
-          </button>
-          <button onClick={() => handleSkip(10)} className="text-3xl">
-            <RiForward10Line />
-          </button>
-        </div>
-        <div className="flex gap-4 items-center w-1/3 text-sm">
-          <div>{formatTime(currentTime)}</div>
-          <input
-            type="range"
-            min="0"
-            max={duration.toString()}
-            value={currentTime.toString()}
-            onChange={(e) => {
-              const newTime = Number(e.target.value);
-              setCurrentTime(newTime);
-              if (audioRef.current) {
-                audioRef.current.currentTime = newTime;
-              }
-            }}
-            className="w-full h-1 max-w-[300px] outline-none appearance-none bg-gray-300 rounded-lg cursor-pointer"
-          />
-          <div>{formatTime(duration)}</div>
-        </div>
-      </div>
+          <div className="w-full px-10 text-white fixed h-20 bg-slate-900 bottom-0 left-0 flex items-center justify-between">
+            <audio
+              preload="metadata"
+              ref={audioRef}
+              src={playerData?.audioLink}
+            ></audio>
+            <div className="w-1/3 gap-3 flex">
+              {playerData?.imageLink && (
+                <Image
+                  src={playerData.imageLink}
+                  width={600}
+                  height={600}
+                  alt="Book cover"
+                  className="w-12 max-w-12 h-12"
+                />
+              )}
+              <div className="flex flex-col text-sm justify-center">
+                <p>{playerData?.title}</p>
+                <p className="text-slate-300">{playerData?.author}</p>
+              </div>
+            </div>
+            <div className="w-1/3 flex gap-4 items-center justify-center">
+              <button onClick={() => handleSkip(-10)} className="text-3xl">
+                <RiReplay10Line />
+              </button>
+              <button onClick={handlePlayPause} className="text-5xl">
+                {isPlaying ? <MdPauseCircle /> : <IoIosPlayCircle />}
+              </button>
+              <button onClick={() => handleSkip(10)} className="text-3xl">
+                <RiForward10Line />
+              </button>
+            </div>
+            <div className="flex gap-4 items-center w-1/3 text-sm">
+              <div>{formatTime(currentTime)}</div>
+              <input
+                type="range"
+                min="0"
+                max={duration.toString()}
+                value={currentTime.toString()}
+                onChange={(e) => {
+                  const newTime = Number(e.target.value);
+                  setCurrentTime(newTime);
+                  if (audioRef.current) {
+                    audioRef.current.currentTime = newTime;
+                  }
+                }}
+                className="w-full h-1 max-w-[300px] outline-none appearance-none bg-gray-300 rounded-lg cursor-pointer"
+              />
+              <div>{formatTime(duration)}</div>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 };

@@ -6,8 +6,8 @@ import Selected from "@/app/components/for-you/Selected";
 import Recommended from "@/app/components/for-you/Recommended";
 import Suggested from "@/app/components/for-you/Suggested";
 import Sidebar from "@/app/components/global/Sidebar";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/app/redux/store";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/app/redux/store";
 import { fetchPremiumStatus } from "@/app/redux/features/premiumSlice";
 import { fetchAuthUser } from "@/app/redux/features/authSlice";
 import { getApp } from "firebase/app";
@@ -93,6 +93,7 @@ const ForYou = () => {
     <>
       <Sidebar />
       <div className="flex justify-center flex-col">
+        <Searchbar />
         <div className="w-[1070px] px-6 mx-auto">
           <div className="py-10">
             <section className="flex flex-col justify-center mb-6">
