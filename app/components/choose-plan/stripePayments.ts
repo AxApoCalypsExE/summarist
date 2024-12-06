@@ -52,7 +52,6 @@ export const getPortalUrl = async (app: FirebaseApp): Promise<string> => {
   const auth = getAuth(app);
   const user = auth.currentUser;
 
-  let dataWithUrl: any;
   try {
     const functions = getFunctions(app, "us-central1");
     const functionRef = httpsCallable(
@@ -65,17 +64,16 @@ export const getPortalUrl = async (app: FirebaseApp): Promise<string> => {
     });
 
     // Add a type to the data
-    dataWithUrl = data as { url: string };
-    console.log("Reroute to Stripe portal: ", dataWithUrl.url);
+    const dataWithUrl = data as { url: string };
+
+    if (dataWithUrl.url) {
+      console.log("Reroute to Stripe portal: ", dataWithUrl.url);
+      return dataWithUrl.url;
+    } else {
+      throw new Error("No URL returned");
+    }
   } catch (error) {
     console.error(error);
+    throw new Error("Failed to retrieve the portal URL");
   }
-
-  return new Promise<string>((resolve, reject) => {
-    if (dataWithUrl.url) {
-      resolve(dataWithUrl.url);
-    } else {
-      reject(new Error("No url returned"));
-    }
-  });
 };

@@ -9,7 +9,7 @@ import { RiBallPenLine } from "react-icons/ri";
 import { RxQuestionMarkCircled } from "react-icons/rx";
 import { SlSettings } from "react-icons/sl";
 import { usePathname } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Link from "next/link";
 import { openModal } from "@/app/redux/features/modalSlice";
 import { logout } from "@/app/redux/features/authSlice";
