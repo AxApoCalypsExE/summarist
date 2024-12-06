@@ -93,7 +93,6 @@ const ForYou = () => {
     <>
       <Sidebar />
       <div className="flex justify-center flex-col">
-        <Searchbar />
         <div className="w-[1070px] px-6 mx-auto">
           <div className="py-10">
             <section className="flex flex-col justify-center mb-6">

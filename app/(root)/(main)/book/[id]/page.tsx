@@ -1,6 +1,5 @@
 "use client";
 
-import Searchbar from "@/app/components/global/Searchbar";
 import Sidebar from "@/app/components/global/Sidebar";
 import { auth } from "@/app/firebase";
 import { fetchAuthUser } from "@/app/redux/features/authSlice";
@@ -119,7 +118,6 @@ const Book = () => {
   return (
     <>
       <Sidebar />
-      <Searchbar />
       <div className="flex max-w-[1070px] mx-auto py-10 justify-between px-6 gap-4">
         <div className="w-[60%]">
           <div className="gap-4 flex flex-col mb-4">

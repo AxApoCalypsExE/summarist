@@ -1,6 +1,5 @@
 "use client";
 
-import Searchbar from "@/app/components/global/Searchbar";
 import SidebarPlayer from "@/app/components/global/SidebarPlayer";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -11,7 +10,6 @@ import { RiForward10Line, RiReplay10Line } from "react-icons/ri";
 
 import "./progress-bar.css";
 import { auth } from "@/app/firebase";
-import { getPremiumStatus } from "@/app/components/choose-plan/getPremiumStatus";
 import { getApp } from "firebase/app";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/redux/store";
@@ -166,7 +164,6 @@ const Player = () => {
   return (
     <>
       <SidebarPlayer setFontSize={setFontSize} />
-      <Searchbar />
       <div className="mx-auto p-6 max-w-[800px] whitespace-pre-line">
         <div className="text-2xl font-bold mb-8 pb-4 border-b border-gray-200">
           {playerData?.title}
